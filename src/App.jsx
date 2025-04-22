@@ -1,35 +1,37 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+// import Header from "../src/components/Header";
+import Home from './pages/Home';
+import PostDetails from './pages/PostDetails';
+import ManagePost from './pages/ManagePost';
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Router>
+      {/* <Header /> */}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/post/:id" element={<PostDetails />} />
+        <Route path="/create" element={<ManagePost />} />
+        <Route path="/edit/:id" element={<ManagePost />} />
+        <Route path="/not-found" element={
+          <div className="min-h-screen flex items-center justify-center">
+            <div className="text-center">
+              <h1 className="text-4xl font-bold mb-4">404 - Not Found</h1>
+              <p className="mb-6">The cloud post you're looking for doesn't exist.</p>
+              <a 
+                href="/" 
+                className="bg-sky-500 text-white px-4 py-2 rounded-md hover:bg-sky-600"
+              >
+                Back to Home
+              </a>
+            </div>
+          </div>
+        } />
+        <Route path="*" element={<Navigate to="/not-found" replace />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;
