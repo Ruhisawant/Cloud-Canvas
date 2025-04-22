@@ -1,66 +1,4 @@
-/* Home.css - Cloud Watchers Forum */
-
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
-
-:root {
-  --primary-color: #6ba4ff;
-  --secondary-color: #b5d8ff;
-  --accent-color: #ff9c8f;
-  --background-color: #f8fbff;
-  --text-color: #2d3748;
-  --light-text: #718096;
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --hover-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-  --border-radius: 12px;
-  --transition: all 0.3s ease;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Quicksand', sans-serif;
-}
-
-body {
-  background-color: var(--background-color);
-  color: var(--text-color);
-}
-
-.home-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
 /* Header Styles */
-.home-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 0;
-  margin-bottom: 24px;
-  border-bottom: 1px solid rgba(107, 164, 255, 0.2);
-}
-
-.logo-container {
-  display: flex;
-  align-items: center;
-}
-
-.logo {
-  width: 40px;
-  height: 40px;
-  margin-right: 12px;
-}
-
-.logo-container h1 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: var(--primary-color);
-}
-
 .search-container {
   flex: 1;
   max-width: 500px;
@@ -142,7 +80,7 @@ body {
   border-color: var(--primary-color);
 }
 
-/* Posts Grid - Pinterest Style */
+/* Posts Grid */
 .posts-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -157,7 +95,6 @@ body {
   box-shadow: var(--shadow);
   transition: var(--transition);
   text-decoration: none;
-  color: var(--text-color);
   display: flex;
   flex-direction: column;
 }
@@ -170,7 +107,7 @@ body {
 .post-image-container {
   width: 100%;
   height: 0;
-  padding-bottom: 75%; /* Aspect ratio for the images */
+  padding-bottom: 75%;
   position: relative;
   overflow: hidden;
 }
@@ -199,8 +136,11 @@ body {
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 8px;
-  color: var(--text-color);
   line-height: 1.4;
+}
+
+.post-title {
+  color: var(--text-color);
 }
 
 .post-meta {
@@ -246,8 +186,8 @@ body {
 }
 
 .loading-container p {
-  color: var(--light-text);
   font-size: 1rem;
+  color: var(--light-text);
 }
 
 /* No Results Message */
@@ -267,29 +207,28 @@ body {
   color: var(--light-text);
 }
 
-/* Responsive Styles */
+/* Responsive */
 @media (max-width: 768px) {
   .home-header {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .logo-container {
     margin-bottom: 16px;
   }
-  
+
   .search-container {
     width: 100%;
-    max-width: none;
     margin: 16px 0;
   }
-  
+
   .nav-links {
     width: 100%;
     justify-content: flex-end;
     margin-top: 16px;
   }
-  
+
   .posts-grid {
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 16px;
@@ -300,7 +239,7 @@ body {
   .posts-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .post-image-container {
     padding-bottom: 60%;
   }

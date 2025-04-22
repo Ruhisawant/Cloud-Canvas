@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import './ManagePost.css';
-import { Cloud } from "lucide-react";
 
-function ManagePost() {
+export default function ManagePost() {
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditMode = !!id;
   const [isLoading, setIsLoading] = useState(isEditMode);
-  
+
   const [post, setPost] = useState({
     title: "",
     content: "",
@@ -16,10 +15,8 @@ function ManagePost() {
     cloudType: isEditMode ? "other" : "cumulus"
   });
 
-  // Preview state
   const [previewError, setPreviewError] = useState(false);
 
-  // Cloud type options
   const cloudTypeOptions = [
     { value: "cumulus", label: "Cumulus - Fluffy cotton-like clouds" },
     { value: "stratus", label: "Stratus - Flat, layered clouds" },
@@ -31,7 +28,7 @@ function ManagePost() {
 
   useEffect(() => {
     if (!isEditMode) return;
-    
+
     const foundPost = getPostById(id);
     if (foundPost) {
       setPost({
@@ -46,7 +43,6 @@ function ManagePost() {
     }
   }, [id, navigate, isEditMode]);
 
-  // Data functions
   function getPostById(postId) {
     try {
       const posts = JSON.parse(localStorage.getItem('cloudPosts') || '[]');
@@ -63,7 +59,6 @@ function ManagePost() {
       const updatedPosts = posts.map(post => 
         post.id === postId ? { ...post, ...updatedData, updatedAt: new Date().toISOString() } : post
       );
-      
       localStorage.setItem('cloudPosts', JSON.stringify(updatedPosts));
       return updatedPosts.find(post => post.id === postId) || null;
     } catch (error) {
@@ -75,7 +70,6 @@ function ManagePost() {
   function createPost(postData) {
     try {
       const posts = JSON.parse(localStorage.getItem('cloudPosts') || '[]');
-      
       const newPost = {
         id: `post-${Date.now()}`,
         ...postData,
@@ -83,10 +77,8 @@ function ManagePost() {
         timestamp: new Date().toISOString(),
         comments: []
       };
-      
       const updatedPosts = [...posts, newPost];
       localStorage.setItem('cloudPosts', JSON.stringify(updatedPosts));
-      
       return newPost;
     } catch (error) {
       console.error("Failed to create post:", error);
@@ -97,8 +89,6 @@ function ManagePost() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setPost(prev => ({ ...prev, [name]: value }));
-    
-    // Reset preview error when changing image URL
     if (name === 'imageUrl') {
       setPreviewError(false);
     }
@@ -106,17 +96,16 @@ function ManagePost() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     if (!post.title.trim()) {
       alert("Please enter a title for your cloud spotting");
       return;
     }
-    
     if (!post.imageUrl.trim()) {
       alert("Please enter an image URL for your cloud spotting");
       return;
     }
-    
+
     if (isEditMode) {
       const updatedPost = updatePost(id, post);
       if (updatedPost) {
@@ -136,16 +125,13 @@ function ManagePost() {
 
   if (isLoading) {
     return (
-      <div className="manage-post-container">
-        <header className="manage-post-header">
+      <div className="main-content">
+        <header className="content-header">
           <div className="logo-container">
-            <img src={CloudIcon} alt="Cloud Watchers Logo" className="logo" />
             <h1>Cloud Watchers</h1>
           </div>
           <div className="nav-links">
-            <Link to="/" className="back-button">
-              <i className="fas fa-arrow-left"></i> Back to Home
-            </Link>
+            <Link to="/" className="back-button">Back to Home</Link>
           </div>
         </header>
         <div className="loading-container">
@@ -157,10 +143,9 @@ function ManagePost() {
   }
 
   return (
-    <div className="manage-post-container">
-      <header className="manage-post-header">
+    <div className="main-content">
+      <header className="content-header">
         <div className="logo-container">
-          <Cloud />
           <h1>Cloud Watchers</h1>
         </div>
         <div className="nav-links">
@@ -169,12 +154,12 @@ function ManagePost() {
           </Link>
         </div>
       </header>
-      
+
       <main className="form-container">
         <h2 className="form-title">
           {isEditMode ? "Edit Your Cloud Spotting" : "Share Your Cloud Spotting"}
         </h2>
-        
+
         <form onSubmit={handleSubmit} className="cloud-form">
           <div className="form-grid">
             <div className="form-left">
@@ -192,7 +177,7 @@ function ManagePost() {
                   required
                 />
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="cloudType">Cloud Type</label>
                 <select
@@ -208,7 +193,7 @@ function ManagePost() {
                   ))}
                 </select>
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="imageUrl">
                   Image URL <span className="required">*</span>
@@ -223,7 +208,7 @@ function ManagePost() {
                   required
                 />
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="content">Description</label>
                 <textarea
@@ -236,7 +221,7 @@ function ManagePost() {
                 ></textarea>
               </div>
             </div>
-            
+
             <div className="form-right">
               <div className="image-preview-container">
                 <h3>Preview</h3>
@@ -261,7 +246,7 @@ function ManagePost() {
                     <p>Enter an image URL to see a preview</p>
                   </div>
                 )}
-                
+
                 <div className="preview-card">
                   <h4>{post.title || "Your Cloud Title"}</h4>
                   <p className="cloud-type">
@@ -275,7 +260,7 @@ function ManagePost() {
               </div>
             </div>
           </div>
-          
+
           <div className="form-actions">
             <button 
               type="button" 
@@ -293,5 +278,3 @@ function ManagePost() {
     </div>
   );
 }
-
-export default ManagePost;

@@ -1,6 +1,109 @@
+/* ========== CSS RESET & BASE STYLES ========== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Quicksand', sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+/* ========== ROOT VARIABLES ========== */
+:root {
+  --primary-color: #6ba4ff;
+  --secondary-color: #b5d8ff;
+  --accent-color: #ff9c8f;
+  --background-color: #f8fbff;
+  --text-color: #2d3748;
+  --light-text: #718096;
+
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --hover-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+
+  --border-radius: 12px;
+  --transition: all 0.3s ease;
+}
+
+/* ========== LAYOUT ========== */
 #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+}
+
+.main-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ========== UTILITY CLASSES ========== */
+.text-center {
+  text-align: center;
+}
+
+.shadow {
+  box-shadow: var(--shadow);
+}
+
+.hover-shadow:hover {
+  box-shadow: var(--hover-shadow);
+}
+
+.rounded {
+  border-radius: var(--border-radius);
+}
+
+.transition {
+  transition: var(--transition);
+}
+
+.bg-primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.bg-secondary {
+  background-color: var(--secondary-color);
+}
+
+.bg-accent {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+.text-light {
+  color: var(--light-text);
+}
+
+/* ========== COMPONENT STYLES ========== */
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  margin-bottom: 24px;
+  border-bottom: 1px solid rgba(107, 164, 255, 0.2);
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+  margin-right: 12px;
+}
+
+.logo-container h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary-color);
 }

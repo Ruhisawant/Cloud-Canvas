@@ -1,66 +1,4 @@
-/* ManagePost.css - Cloud Watchers Forum */
-
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
-
-:root {
-  --primary-color: #6ba4ff;
-  --secondary-color: #b5d8ff;
-  --accent-color: #ff9c8f;
-  --background-color: #f8fbff;
-  --text-color: #2d3748;
-  --light-text: #718096;
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --hover-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-  --border-radius: 12px;
-  --transition: all 0.3s ease;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Quicksand', sans-serif;
-}
-
-body {
-  background-color: var(--background-color);
-  color: var(--text-color);
-}
-
-.manage-post-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
 /* Header Styles */
-.manage-post-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 0;
-  margin-bottom: 24px;
-  border-bottom: 1px solid rgba(107, 164, 255, 0.2);
-}
-
-.logo-container {
-  display: flex;
-  align-items: center;
-}
-
-.logo {
-  width: 40px;
-  height: 40px;
-  margin-right: 12px;
-}
-
-.logo-container h1 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: var(--primary-color);
-}
-
 .nav-links {
   display: flex;
   align-items: center;
@@ -339,15 +277,15 @@ body {
   .form-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .form-container {
     padding: 24px 16px;
   }
-  
+
   .image-preview {
     height: 200px;
   }
-  
+
   .empty-preview {
     height: 200px;
   }
@@ -358,20 +296,20 @@ body {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .logo-container {
     margin-bottom: 16px;
   }
-  
+
   .nav-links {
     width: 100%;
     justify-content: flex-start;
   }
-  
+
   .form-actions {
     flex-direction: column;
   }
-  
+
   .cancel-button,
   .submit-button {
     width: 100%;
