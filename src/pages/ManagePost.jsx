@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
+import { Plus } from 'lucide-react'
+import { supabase } from '../supabaseClient';
 import './ManagePost.css';
 
 export default function ManagePost() {
@@ -29,62 +31,28 @@ export default function ManagePost() {
   useEffect(() => {
     if (!isEditMode) return;
 
-    const foundPost = getPostById(id);
-    if (foundPost) {
-      setPost({
-        title: foundPost.title,
-        content: foundPost.content || "",
-        imageUrl: foundPost.imageUrl || "",
-        cloudType: foundPost.cloudType || "other",
-      });
-      setIsLoading(false);
-    } else {
-      navigate("/not-found");
+    async function fetchPost() {
+      const { data, error } = await supabase
+        .from('posts')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error || !data) {
+        console.error("Post not found or error:", error);
+      } else {
+        setPost({
+          title: data.title,
+          content: data.content || "",
+          imageUrl: data.imageUrl || "",
+          cloudType: data.cloudType || "other",
+        });
+        setIsLoading(false);
+      }
     }
+
+    fetchPost();
   }, [id, navigate, isEditMode]);
-
-  function getPostById(postId) {
-    try {
-      const posts = JSON.parse(localStorage.getItem('cloudPosts') || '[]');
-      return posts.find(post => post.id === postId) || null;
-    } catch (error) {
-      console.error("Failed to get post:", error);
-      return null;
-    }
-  }
-
-  function updatePost(postId, updatedData) {
-    try {
-      const posts = JSON.parse(localStorage.getItem('cloudPosts') || '[]');
-      const updatedPosts = posts.map(post => 
-        post.id === postId ? { ...post, ...updatedData, updatedAt: new Date().toISOString() } : post
-      );
-      localStorage.setItem('cloudPosts', JSON.stringify(updatedPosts));
-      return updatedPosts.find(post => post.id === postId) || null;
-    } catch (error) {
-      console.error("Failed to update post:", error);
-      return null;
-    }
-  }
-
-  function createPost(postData) {
-    try {
-      const posts = JSON.parse(localStorage.getItem('cloudPosts') || '[]');
-      const newPost = {
-        id: `post-${Date.now()}`,
-        ...postData,
-        upvotes: 0,
-        timestamp: new Date().toISOString(),
-        comments: []
-      };
-      const updatedPosts = [...posts, newPost];
-      localStorage.setItem('cloudPosts', JSON.stringify(updatedPosts));
-      return newPost;
-    } catch (error) {
-      console.error("Failed to create post:", error);
-      return null;
-    }
-  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -94,28 +62,43 @@ export default function ManagePost() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!post.title.trim()) {
-      alert("Please enter a title for your cloud spotting");
-      return;
-    }
-    if (!post.imageUrl.trim()) {
-      alert("Please enter an image URL for your cloud spotting");
-      return;
-    }
-
+  
+    if (!post.title.trim()) return alert("Please enter a title.");
+    if (!post.imageUrl.trim()) return alert("Please enter an image URL.");
+  
+    const payload = {
+      title: post.title,
+      content: post.content,
+      imageUrl: post.imageUrl,
+      timestamp: new Date().toISOString(),
+      upvotes: 0,
+      comments: []
+    };
+  
     if (isEditMode) {
-      const updatedPost = updatePost(id, post);
-      if (updatedPost) {
-        navigate(`/post/${id}`);
-      }
+      const { error } = await supabase
+        .from("posts")
+        .update({
+          title: post.title,
+          content: post.content,
+          imageUrl: post.imageUrl,
+          updatedAt: new Date().toISOString(),
+        })
+        .eq("id", id);
+  
+      if (!error) navigate(`/post/${id}`);
+      else console.error("Failed to update post:", error);
     } else {
-      const newPost = createPost(post);
-      if (newPost) {
-        navigate(`/post/${newPost.id}`);
-      }
+      const { data, error } = await supabase
+        .from("posts")
+        .insert([payload])
+        .select()
+        .single();
+  
+      if (!error) navigate(`/post/${data.id}`);
+      else console.error("Failed to create post:", error);
     }
   };
 
@@ -126,13 +109,8 @@ export default function ManagePost() {
   if (isLoading) {
     return (
       <div className="main-content">
-        <header className="content-header">
-          <div className="logo-container">
-            <h1>Cloud Watchers</h1>
-          </div>
-          <div className="nav-links">
-            <Link to="/" className="back-button">Back to Home</Link>
-          </div>
+        <header className='content-header'>
+          <div className='logo-container'><h1>Cloud Canvas</h1></div>
         </header>
         <div className="loading-container">
           <div className="loading-spinner"></div>
@@ -144,20 +122,15 @@ export default function ManagePost() {
 
   return (
     <div className="main-content">
-      <header className="content-header">
-        <div className="logo-container">
-          <h1>Cloud Watchers</h1>
-        </div>
-        <div className="nav-links">
-          <Link to="/" className="back-button">
-            <i className="fas fa-arrow-left"></i> Back to Home
-          </Link>
+      <header className='content-header'>
+        <div className='logo-container'>
+          <Link to='/' className='home-btn'><h1>Cloud Canvas</h1></Link>
         </div>
       </header>
 
       <main className="form-container">
         <h2 className="form-title">
-          {isEditMode ? "Edit Your Cloud Spotting" : "Share Your Cloud Spotting"}
+          {isEditMode ? "Edit Your Post" : "Share Your Unique Cloud!"}
         </h2>
 
         <form onSubmit={handleSubmit} className="cloud-form">
@@ -270,7 +243,7 @@ export default function ManagePost() {
               Cancel
             </button>
             <button type="submit" className="submit-button">
-              {isEditMode ? "Update Cloud" : "Share Cloud"}
+              {isEditMode ? "Update Post" : "Share Post"}
             </button>
           </div>
         </form>

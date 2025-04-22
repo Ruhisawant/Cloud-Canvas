@@ -102,8 +102,37 @@ html, body {
   margin-right: 12px;
 }
 
-.logo-container h1 {
-  font-size: 1.8rem;
+.home-btn {
+  font-size: 1rem;
   font-weight: 700;
   color: var(--primary-color);
+  text-decoration: none;
+  padding-left: 16px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+}
+
+.create-button {
+  display: flex;
+  align-items: center;
+  padding: 10px 18px;
+  margin-right: 16px;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.create-button:hover {
+  background-color: #5a92eb;
+  transform: translateY(-2px);
+}
+
+.create-button i {
+  margin-right: 8px;
 }

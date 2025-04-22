@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Plus, Cloud, MessageCircle } from 'lucide-react'
+import { supabase } from '../supabaseClient'
 import './Home.css'
 
 export default function Home() {
@@ -13,78 +14,19 @@ export default function Home() {
   useEffect(() => {
     const fetchPosts = async () => {
       setIsLoading(true)
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      const { data, error } = await supabase
+        .from('posts')
+        .select('*')
 
-      const mockPosts = [
-        {
-          id: 1,
-          title: 'Elephant in the Sky',
-          content: 'I spotted this cloud that looks exactly like an elephant with its trunk raised!',
-          imageUrl: 'https://images.unsplash.com/photo-1517685352821-92cf88aee5a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
-          upvotes: 24,
-          comments: [
-            { id: 1, author: 'cloudlover', text: 'I see it! The trunk is so defined!', timestamp: new Date().toISOString() },
-            { id: 2, author: 'skygazer', text: 'Amazing find! I love elephant clouds.', timestamp: new Date().toISOString() }
-          ]
-        },
-        {
-          id: 2,
-          title: 'Dragon Breathing Fire',
-          content: 'This sunset cloud formation looks like a dragon breathing fire across the sky!',
-          imageUrl: 'https://images.unsplash.com/photo-1534088568595-a066f410bcda?ixlib=rb-1.2.1&auto=format&fit=crop&w=1351&q=80',
-          timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-          upvotes: 42,
-          comments: [
-            { id: 1, author: 'dragonspotter', text: "That's definitely a dragon! Great capture!", timestamp: new Date().toISOString() }
-          ]
-        },
-        {
-          id: 3,
-          title: 'Fluffy Sheep Herd',
-          content: 'A whole field of fluffy sheep clouds floating by this afternoon.',
-          imageUrl: 'https://images.unsplash.com/photo-1505533321630-975218a5f66f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
-          upvotes: 18,
-          comments: []
-        },
-        {
-          id: 4,
-          title: 'Heart-Shaped Cloud',
-          content: 'Spotted this perfect heart in the sky today! Love is in the air!',
-          imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-1.2.1&auto=format&fit=crop&w=1352&q=80',
-          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
-          upvotes: 56,
-          comments: [
-            { id: 1, author: 'loveclouds', text: 'So romantic!', timestamp: new Date().toISOString() },
-            { id: 2, author: 'skyheart', text: 'Perfect shape!', timestamp: new Date().toISOString() },
-            { id: 3, author: 'cloudromantic', text: 'The universe is sending love!', timestamp: new Date().toISOString() }
-          ]
-        },
-        {
-          id: 5,
-          title: 'Face in the Cumulus',
-          content: 'Can you see the face? It was staring down at me for almost an hour!',
-          imageUrl: 'https://images.unsplash.com/photo-1536514498073-50e69d39c6cf?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 12).toISOString(),
-          upvotes: 31,
-          comments: [
-            { id: 1, author: 'faceseeker', text: 'I can totally see it! Looks like an old man.', timestamp: new Date().toISOString() }
-          ]
-        },
-        {
-          id: 6,
-          title: 'Whale Swimming in the Blue',
-          content: 'This massive cloud reminded me of a blue whale gracefully swimming through the ocean.',
-          imageUrl: 'https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
-          upvotes: 29,
-          comments: []
-        }
-      ]
+      if (error) {
+        console.error('Error fetching posts:', error)
+        setIsLoading(false)
+        return
+      }
 
-      setPosts(mockPosts)
-      setFilteredPosts(mockPosts)
+      const sortedData = data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+      setPosts(sortedData)
+      setFilteredPosts(sortedData)
       setIsLoading(false)
     }
 
@@ -95,7 +37,7 @@ export default function Home() {
     let result = [...posts]
 
     if (searchTerm) {
-      result = result.filter(post => 
+      result = result.filter(post =>
         post.title.toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
@@ -119,20 +61,16 @@ export default function Home() {
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
 
-    if (diffMins < 60) {
-      return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`
-    } else if (diffHours < 24) {
-      return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`
-    } else {
-      return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`
-    }
+    if (diffMins < 60) return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`
+    else if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`
+    else return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`
   }
 
   return (
     <div className='main-content'>
       <header className='content-header'>
         <div className='logo-container'>
-          <h1>Cloud Canvas</h1>
+          <Link to='/' className='home-btn'><h1>Cloud Canvas</h1></Link>
         </div>
         <div className='search-container'>
           <input 
@@ -183,7 +121,7 @@ export default function Home() {
                   <div className='post-meta'>
                     <span className='post-time'>{formatTimestamp(post.timestamp)}</span>
                     <span className='post-upvotes'>
-                      <MessageCircle className='post-comments'/> {post.upvotes}
+                      <MessageCircle className='post-comments'/> {post.comments?.length || 0}
                       <Cloud className='post-likes'/> {post.upvotes}
                     </span>
                   </div>
