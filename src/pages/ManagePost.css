@@ -1,4 +1,4 @@
-/* Form Container */
+/* Form Structure */
 .form-container {
   background-color: white;
   border-radius: var(--border-radius);
@@ -67,7 +67,7 @@
   min-height: 120px;
 }
 
-/* Image Preview */
+/* Image Preview Section */
 .image-preview-container {
   background-color: var(--background-color);
   border-radius: var(--border-radius);
@@ -101,6 +101,7 @@
   transition: var(--transition);
 }
 
+/* Error + Empty States */
 .preview-error {
   opacity: 0.3;
 }
@@ -144,6 +145,7 @@
   color: var(--primary-color);
 }
 
+/* Preview Card */
 .preview-card {
   background-color: white;
   border-radius: var(--border-radius);
@@ -175,7 +177,7 @@
   overflow-y: auto;
 }
 
-/* Form Actions */
+/* Form Action Buttons */
 .form-actions {
   display: flex;
   justify-content: flex-end;
@@ -214,37 +216,7 @@
   transform: translateY(-2px);
 }
 
-/* Loading Spinner */
-.loading-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 400px;
-}
-
-.loading-spinner {
-  width: 50px;
-  height: 50px;
-  border: 4px solid rgba(107, 164, 255, 0.3);
-  border-radius: 50%;
-  border-top-color: var(--primary-color);
-  animation: spin 1s linear infinite;
-  margin-bottom: 16px;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.loading-container p {
-  color: var(--light-text);
-  font-size: 1rem;
-}
-
-/* Responsive Styles */
+/* Responsive */
 @media (max-width: 768px) {
   .form-grid {
     grid-template-columns: 1fr;
@@ -254,10 +226,7 @@
     padding: 24px 16px;
   }
 
-  .image-preview {
-    height: 200px;
-  }
-
+  .image-preview,
   .empty-preview {
     height: 200px;
   }

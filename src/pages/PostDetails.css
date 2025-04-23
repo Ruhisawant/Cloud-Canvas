@@ -12,7 +12,9 @@
 /* Back Navigation */
 .back-navigation {
   margin-bottom: 1.5rem;
-	left: 0;
+  position: sticky;
+  left: 0;
+  width: 100%;
 }
 
 .back-button {
@@ -26,6 +28,8 @@
   text-decoration: none;
   font-weight: 600;
   transition: var(--transition);
+  margin-left: 0;
+  float: left;
 }
 
 .back-button:hover {
@@ -109,7 +113,7 @@
 }
 
 .post-title {
-  font-size: 1.5rem;
+  font-size: 1rem;
   font-weight: 700;
   margin: 0;
   color: var(--text-color);
@@ -120,6 +124,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+	margin-left: 20px;
+	margin-top: 5px;
 }
 
 .upvote-button {
@@ -278,12 +284,56 @@
 
 .comment-text {
   margin: 0 0 0.5rem 0;
+  text-align: left;
 }
 
 .comment-timestamp {
   margin: 0;
   font-size: 0.75rem;
   color: var(--light-text);
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.comment-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.comment-action-button {
+  background: none;
+  border: none;
+  color: var(--light-text);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.comment-action-button:hover {
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+}
+
+.comment-edit-form {
+  display: flex;
+  margin-top: 0.5rem;
+  gap: 0.5rem;
+}
+
+.comment-edit-input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid var(--secondary-color);
+  border-radius: var(--border-radius);
 }
 
 /* Empty State */
@@ -352,6 +402,10 @@
 /* Utility Classes */
 .text-center {
   text-align: center;
+}
+
+.text-left {
+  text-align: left;
 }
 
 .shadow {

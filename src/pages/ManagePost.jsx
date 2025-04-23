@@ -1,72 +1,70 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
-import { Plus } from 'lucide-react'
-import { supabase } from '../supabaseClient';
-import './ManagePost.css';
+import React, { useState, useEffect } from 'react'
+import { useNavigate, useParams, Link } from 'react-router-dom'
+import { supabase } from '../supabaseClient'
+import './ManagePost.css'
 
 export default function ManagePost() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const isEditMode = !!id;
-  const [isLoading, setIsLoading] = useState(isEditMode);
+  const { id } = useParams()
+  const navigate = useNavigate()
+  const isEditMode = !!id
+  const [isLoading, setIsLoading] = useState(isEditMode)
+  const [previewError, setPreviewError] = useState(false)
 
   const [post, setPost] = useState({
-    title: "",
-    content: "",
-    imageUrl: "",
-    cloudType: isEditMode ? "other" : "cumulus"
-  });
-
-  const [previewError, setPreviewError] = useState(false);
+    title: '',
+    content: '',
+    imageUrl: '',
+    cloudType: isEditMode ? 'other' : 'cumulus'
+  })
 
   const cloudTypeOptions = [
-    { value: "cumulus", label: "Cumulus - Fluffy cotton-like clouds" },
-    { value: "stratus", label: "Stratus - Flat, layered clouds" },
-    { value: "cirrus", label: "Cirrus - Thin, wispy clouds" },
-    { value: "nimbus", label: "Nimbus - Rain clouds" },
-    { value: "cumulonimbus", label: "Cumulonimbus - Thunderstorm clouds" },
-    { value: "other", label: "Other cloud formation" }
+    { value: 'cumulus', label: 'Cumulus - Fluffy cotton-like clouds' },
+    { value: 'stratus', label: 'Stratus - Flat, layered clouds' },
+    { value: 'cirrus', label: 'Cirrus - Thin, wispy clouds' },
+    { value: 'nimbus', label: 'Nimbus - Rain clouds' },
+    { value: 'cumulonimbus', label: 'Cumulonimbus - Thunderstorm clouds' },
+    { value: 'other', label: 'Other cloud formation' }
   ];
 
   useEffect(() => {
-    if (!isEditMode) return;
+    if (!isEditMode) return
 
     async function fetchPost() {
       const { data, error } = await supabase
         .from('posts')
         .select('*')
         .eq('id', id)
-        .single();
+        .single()
 
       if (error || !data) {
-        console.error("Post not found or error:", error);
+        console.error('Post not found or error:', error)
       } else {
         setPost({
           title: data.title,
-          content: data.content || "",
-          imageUrl: data.imageUrl || "",
-          cloudType: data.cloudType || "other",
+          content: data.content || '',
+          imageUrl: data.imageUrl || '',
+          cloudType: data.cloudType || 'other',
         });
-        setIsLoading(false);
+        setIsLoading(false)
       }
     }
 
-    fetchPost();
-  }, [id, navigate, isEditMode]);
+    fetchPost()
+  }, [id, navigate, isEditMode])
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setPost(prev => ({ ...prev, [name]: value }));
+    const { name, value } = e.target
+    setPost(prev => ({ ...prev, [name]: value }))
     if (name === 'imageUrl') {
-      setPreviewError(false);
+      setPreviewError(false)
     }
-  };
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
   
-    if (!post.title.trim()) return alert("Please enter a title.");
-    if (!post.imageUrl.trim()) return alert("Please enter an image URL.");
+    if (!post.title.trim()) return alert('Please enter a title.')
+    if (!post.imageUrl.trim()) return alert('Please enter an image URL.')
   
     const payload = {
       title: post.title,
@@ -75,87 +73,90 @@ export default function ManagePost() {
       timestamp: new Date().toISOString(),
       upvotes: 0,
       comments: []
-    };
+    }
   
     if (isEditMode) {
       const { error } = await supabase
-        .from("posts")
+        .from('posts')
         .update({
           title: post.title,
           content: post.content,
           imageUrl: post.imageUrl,
           updatedAt: new Date().toISOString(),
         })
-        .eq("id", id);
+        .eq('id', id)
   
-      if (!error) navigate(`/post/${id}`);
-      else console.error("Failed to update post:", error);
+      if (!error) navigate(`/post/${id}`)
+      else console.error('Failed to update post:', error)
     } else {
       const { data, error } = await supabase
-        .from("posts")
+        .from('posts')
         .insert([payload])
         .select()
-        .single();
+        .single()
   
-      if (!error) navigate(`/post/${data.id}`);
-      else console.error("Failed to create post:", error);
+      if (!error) navigate(`/post/${data.id}`)
+      else console.error('Failed to create post:', error)
     }
   };
 
   const handleImageError = () => {
-    setPreviewError(true);
-  };
+    setPreviewError(true)
+  }
 
+  // Show loading screen
   if (isLoading) {
     return (
-      <div className="main-content">
+      <div className='main-content'>
         <header className='content-header'>
           <div className='logo-container'><h1>Cloud Canvas</h1></div>
         </header>
-        <div className="loading-container">
-          <div className="loading-spinner"></div>
+  
+        <div className='loading-container'>
+          <div className='loading-spinner'></div>
           <p>Loading cloud formation...</p>
         </div>
       </div>
-    );
+    )
   }
-
+  
   return (
-    <div className="main-content">
+    <div className='main-content'>
+      {/* Header */}
       <header className='content-header'>
-        <div className='logo-container'>
-          <Link to='/' className='home-btn'><h1>Cloud Canvas</h1></Link>
-        </div>
+        <Link to='/' className='logo-container'><h1>Cloud Canvas</h1></Link>
       </header>
-
-      <main className="form-container">
-        <h2 className="form-title">
-          {isEditMode ? "Edit Your Post" : "Share Your Unique Cloud!"}
+  
+      {/* Main Form */}
+      <main className='form-container'>
+        <h2 className='form-title'>
+          {isEditMode ? 'Edit Your Post' : 'Share Your Unique Cloud!'}
         </h2>
-
-        <form onSubmit={handleSubmit} className="cloud-form">
-          <div className="form-grid">
-            <div className="form-left">
-              <div className="form-group">
-                <label htmlFor="title">
-                  Title <span className="required">*</span>
+  
+        <form onSubmit={handleSubmit} className='cloud-form'>
+          <div className='form-grid'>
+            {/* Form Left Side */}
+            <div className='form-left'>
+              <div className='form-group'>
+                <label htmlFor='title'>
+                  Title <span className='required'>*</span>
                 </label>
                 <input
-                  type="text"
-                  id="title"
-                  name="title"
+                  type='text'
+                  id='title'
+                  name='title'
                   value={post.title}
                   onChange={handleChange}
-                  placeholder="What does this cloud resemble?"
+                  placeholder='What does this cloud resemble?'
                   required
                 />
               </div>
-
-              <div className="form-group">
-                <label htmlFor="cloudType">Cloud Type</label>
+  
+              <div className='form-group'>
+                <label htmlFor='cloudType'>Cloud Type</label>
                 <select
-                  id="cloudType"
-                  name="cloudType"
+                  id='cloudType'
+                  name='cloudType'
                   value={post.cloudType}
                   onChange={handleChange}
                 >
@@ -166,88 +167,90 @@ export default function ManagePost() {
                   ))}
                 </select>
               </div>
-
-              <div className="form-group">
-                <label htmlFor="imageUrl">
-                  Image URL <span className="required">*</span>
+  
+              <div className='form-group'>
+                <label htmlFor='imageUrl'>
+                  Image URL <span className='required'>*</span>
                 </label>
                 <input
-                  type="url"
-                  id="imageUrl"
-                  name="imageUrl"
+                  type='url'
+                  id='imageUrl'
+                  name='imageUrl'
                   value={post.imageUrl}
                   onChange={handleChange}
-                  placeholder="https://example.com/your-cloud-image.jpg"
+                  placeholder='https://example.com/your-cloud-image.jpg'
                   required
                 />
               </div>
-
-              <div className="form-group">
-                <label htmlFor="content">Description</label>
+  
+              <div className='form-group'>
+                <label htmlFor='content'>Description</label>
                 <textarea
-                  id="content"
-                  name="content"
+                  id='content'
+                  name='content'
                   value={post.content}
                   onChange={handleChange}
-                  rows="5"
-                  placeholder="Tell us about your cloud spotting experience..."
+                  rows='5'
+                  placeholder='Tell us about your cloud spotting experience...'
                 ></textarea>
               </div>
             </div>
-
-            <div className="form-right">
-              <div className="image-preview-container">
+  
+            {/* Preview Side */}
+            <div className='form-right'>
+              <div className='image-preview-container'>
                 <h3>Preview</h3>
                 {post.imageUrl ? (
-                  <div className="image-preview">
+                  <div className='image-preview'>
                     <img 
                       src={post.imageUrl} 
-                      alt="Cloud Preview" 
+                      alt='Cloud Preview' 
                       onError={handleImageError}
-                      className={previewError ? "preview-error" : ""}
+                      className={previewError ? 'preview-error' : ''}
                     />
                     {previewError && (
-                      <div className="error-overlay">
-                        <i className="fas fa-exclamation-triangle"></i>
+                      <div className='error-overlay'>
+                        <i className='fas fa-exclamation-triangle'></i>
                         <p>Invalid image URL</p>
                       </div>
                     )}
                   </div>
                 ) : (
-                  <div className="empty-preview">
-                    <i className="fas fa-cloud"></i>
+                  <div className='empty-preview'>
+                    <i className='fas fa-cloud'></i>
                     <p>Enter an image URL to see a preview</p>
                   </div>
                 )}
-
-                <div className="preview-card">
-                  <h4>{post.title || "Your Cloud Title"}</h4>
-                  <p className="cloud-type">
-                    <i className="fas fa-cloud"></i> 
-                    {cloudTypeOptions.find(option => option.value === post.cloudType)?.label || "Cloud Type"}
+  
+                <div className='preview-card'>
+                  <h4>{post.title || 'Your Cloud Title'}</h4>
+                  <p className='cloud-type'>
+                    <i className='fas fa-cloud'></i> 
+                    {cloudTypeOptions.find(option => option.value === post.cloudType)?.label || 'Cloud Type'}
                   </p>
-                  <p className="preview-content">
-                    {post.content || "Your description will appear here..."}
+                  <p className='preview-content'>
+                    {post.content || 'Your description will appear here...'}
                   </p>
                 </div>
               </div>
             </div>
           </div>
-
-          <div className="form-actions">
+  
+          {/* Form Action Buttons */}
+          <div className='form-actions'>
             <button 
-              type="button" 
-              className="cancel-button"
-              onClick={() => navigate(isEditMode ? `/post/${id}` : "/")}
+              type='button' 
+              className='cancel-button'
+              onClick={() => navigate(isEditMode ? `/post/${id}` : '/')}
             >
               Cancel
             </button>
-            <button type="submit" className="submit-button">
-              {isEditMode ? "Update Post" : "Share Post"}
+            <button type='submit' className='submit-button'>
+              {isEditMode ? 'Update Post' : 'Share Post'}
             </button>
           </div>
         </form>
       </main>
     </div>
-  );
-}
+  )
+}  

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Cloud, MessageCircle } from 'lucide-react'
 import { supabase } from '../supabaseClient'
+import { Cloud, MessageCircle } from 'lucide-react'
 import './Home.css'
 
 export default function Home() {
@@ -11,28 +11,69 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState('')
   const [isLoading, setIsLoading] = useState(true)
 
+  // Fetch posts from Supabase when the component mounts
   useEffect(() => {
     const fetchPosts = async () => {
       setIsLoading(true)
-      const { data, error } = await supabase
-        .from('posts')
-        .select('*')
+      
+      try {
+        // Fetch posts
+        const { data: postsData, error: postsError } = await supabase
+          .from('posts')
+          .select('*')
 
-      if (error) {
-        console.error('Error fetching posts:', error)
+        if (postsError) {
+          console.error('Error fetching posts:', postsError)
+          setIsLoading(false)
+          return
+        }
+
+        // For each post, fetch its comments
+        const postsWithComments = await Promise.all(
+          postsData.map(async (post) => {
+            try {
+              const { data: comments, error: commentsError, count } = await supabase
+                .from('comments')
+                .select('*', { count: 'exact' })
+                .eq('post_id', post.id)
+
+              if (commentsError) {
+                console.warn(`Error fetching comments for post ${post.id}:`, commentsError)
+                return {
+                  ...post,
+                  commentCount: 0
+                }
+              }
+
+              return {
+                ...post,
+                commentCount: count || 0
+              }
+            } catch (err) {
+              console.warn(`Error processing comments for post ${post.id}:`, err)
+              return {
+                ...post,
+                commentCount: 0
+              }
+            }
+          })
+        )
+
+        const sortedData = postsWithComments.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+        
+        setPosts(sortedData)
+        setFilteredPosts(sortedData)
+      } catch (error) {
+        console.error('Error in fetching data:', error)
+      } finally {
         setIsLoading(false)
-        return
       }
-
-      const sortedData = data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-      setPosts(sortedData)
-      setFilteredPosts(sortedData)
-      setIsLoading(false)
     }
 
     fetchPosts()
   }, [])
 
+  // Filter and sort posts based on search term and sort option
   useEffect(() => {
     let result = [...posts]
 
@@ -53,6 +94,7 @@ export default function Home() {
     setFilteredPosts(result)
   }, [posts, searchTerm, sortOption])
 
+  // Helper function to format timestamp into a readable format
   const formatTimestamp = (timestamp) => {
     const date = new Date(timestamp)
     const now = new Date()
@@ -68,10 +110,10 @@ export default function Home() {
 
   return (
     <div className='main-content'>
+      {/* Header with logo, search bar, and create post button */}
       <header className='content-header'>
-        <div className='logo-container'>
-          <Link to='/' className='home-btn'><h1>Cloud Canvas</h1></Link>
-        </div>
+        <Link to='/' className='logo-container'><h1>Cloud Canvas</h1></Link>
+
         <div className='search-container'>
           <input 
             type='text' 
@@ -81,13 +123,10 @@ export default function Home() {
             className='search-input'
           />
         </div>
-        <div className='nav-links'>
-          <Link to='/create' className='create-button'>
-            <Plus />Create Post
-          </Link>
-        </div>
+        <Link to='/create' className='create-button'>Create Post</Link>
       </header>
 
+      {/* Sort and filter controls */}
       <div className='filter-sort-container'>
         <div className='sort-controls'>
           <label>Sort by:</label>
@@ -103,26 +142,28 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Loading state or posts display */}
       {isLoading ? (
         <div className='loading-container'>
           <div className='loading-spinner'></div>
           <p>Loading cloud formations...</p>
         </div>
       ) : (
-        <div className='posts-grid'>
+        <div className='home-posts-grid'>
           {filteredPosts.length > 0 ? (
+            // Display the filtered posts in a grid
             filteredPosts.map(post => (
-              <Link to={`/post/${post.id}`} className='post-card' key={post.id}>
-                <div className='post-image-container'>
-                  <img src={post.imageUrl} alt={post.title} className='post-image' />
+              <Link to={`/post/${post.id}`} className='home-post-card' key={post.id}>
+                <div className='home-post-image-container'>
+                  <img src={post.imageUrl} alt={post.title} className='home-post-image' />
                 </div>
-                <div className='post-info'>
-                  <h3 className='post-title'>{post.title}</h3>
+                <div className='home-post-info'>
+                  <h3 className='home-post-title'>{post.title}</h3>
                   <div className='post-meta'>
-                    <span className='post-time'>{formatTimestamp(post.timestamp)}</span>
-                    <span className='post-upvotes'>
-                      <MessageCircle className='post-comments'/> {post.comments?.length || 0}
-                      <Cloud className='post-likes'/> {post.upvotes}
+                    <span className='post-meta-time'>{formatTimestamp(post.timestamp)}</span>
+                    <span className='post-meta-data'>
+                      <MessageCircle className='post-meta-comments'/> {post.commentCount || 0}
+                      <Cloud className='post-meta-likes'/> {post.upvotes || 0}
                     </span>
                   </div>
                 </div>
